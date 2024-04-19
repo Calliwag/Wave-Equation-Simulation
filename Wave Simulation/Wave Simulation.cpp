@@ -80,10 +80,10 @@ int main()
 	//		pool.Courant[x][y] = (float)GetRandomValue(500, 1000) / 1000.0f;
 	//	}
 	//}
-
+	
 	pool.CreateCourantColor();
 
-	int LimitFrames = 10000;
+	int LimitFrames = 1;
 
     while (!window.ShouldClose())
     {
