@@ -35,6 +35,8 @@ public:
 
 	void CreateCourantColor();
 
+	void CreateCourantColorSimple();
+
 	void CreatePoolTexture();
 
 	void Draw();

@@ -54,7 +54,7 @@ void Pool::CreateCourantColor()
 	{
 		for (int y = 0; y < PoolY; y++)
 		{
-			MaxCourant = max(MaxCourant, Courant[x][y]);
+			MaxCourant = max(MaxCourant, abs(1 - Courant[x][y]));
 		}
 	}
 	CourantColor.resize(PoolX);
@@ -63,12 +63,8 @@ void Pool::CreateCourantColor()
 		CourantColor[x].resize(PoolY);
 		for (int y = 0; y < PoolY; y++)
 		{
-			float C = (MaxCourant - Courant[x][y]) / MaxCourant;
-			//if (C != 0)
-			//{
-			//	C *= 0.999;
-			//}
-			Color Medium = { 255,255,255,255.0f * sqrt(C) };
+			float C = (MaxCourant - abs(1 - Courant[x][y])) / MaxCourant;
+			Color Medium = { 255,255,255,255.0f * (1 - C) };
 			CourantColor[x][y] = Medium;
 		}
 	}
@@ -83,7 +79,43 @@ void Pool::CreateCourantColor()
 	}
 	EndTextureMode();
 	CourantTexture = NewCourantTexture.texture;
-	//UnloadRenderTexture(NewCourantTexture);
+}
+
+void Pool::CreateCourantColorSimple()
+{
+	CourantColor.resize(PoolX);
+	for (int x = 0; x < PoolX; x++)
+	{
+		CourantColor[x].resize(PoolY);
+		for (int y = 0; y < PoolY; y++)
+		{
+			Color Medium = GREEN;
+			if (Courant[x][y] == 0)
+			{
+				Medium = { 255,255,255,255 };
+			}
+			else if (Courant[x][y] == 1)
+			{
+				Medium = { 255,255,255,0 };
+			}
+			else
+			{
+				Medium = { 255,255,255,128 };
+			}
+			CourantColor[x][y] = Medium;
+		}
+	}
+	RenderTexture2D NewCourantTexture = LoadRenderTexture(PoolX, PoolY);
+	BeginTextureMode(NewCourantTexture);
+	for (int x = 0; x < PoolX; x++)
+	{
+		for (int y = 0; y < PoolY; y++)
+		{
+			DrawPixel(x, y, CourantColor[x][y]);
+		}
+	}
+	EndTextureMode();
+	CourantTexture = NewCourantTexture.texture;
 }
 
 void Pool::Draw()
@@ -131,7 +163,7 @@ void Pool::DrawToTexture()
 	ClearBackground(BLACK);
 	DrawTextureEx(PoolTexture.texture, { 0,0 }, 0, DeltaPos * RenderScale, WHITE);
 	DrawRectangleLines(0, 0, PoolX * DeltaPos * RenderScale, PoolY * DeltaPos * RenderScale, WHITE);
-	DrawText(("Frame Time : " + to_string(window.GetFrameTime()) + "s").c_str(), 3, 3, 18, WHITE);
+	DrawText(("Frame Time : " + to_string(window.GetFrameTime()) + "s").c_str(), 5, 3, 18, WHITE);
 	DrawGraphY(PoolX / 2, 750, 0, 50);
 	DrawGraphX(PoolY / 2, 0, 750, 50);
 	EndTextureMode();
@@ -216,50 +248,54 @@ void Pool::EulerUpdate()
 void Pool::VerletUpdate()
 {
 	frames++;
+	cout << "Frame " << frames << endl;
 	MaxDisplacement *= 0.9999;
-	vector<vector<float>> NewDisplacement = Displacement;
-	for (int x = 0; x < PoolX; x++)
+	for (int i = 0; i < 1 / DeltaTime; i++)
 	{
-		for (int y = 0; y < PoolY; y++)
+		vector<vector<float>> NewDisplacement = Displacement;
+		for (int x = 0; x < PoolX; x++)
 		{
-			if (!Sources[x][y])
+			for (int y = 0; y < PoolY; y++)
 			{
-				Acceleration[x][y] = GetAcceleration(x, y);
+				if (!Sources[x][y])
+				{
+					Acceleration[x][y] = GetAcceleration(x, y);
+				}
 			}
 		}
-	}
-	for (int x = 0; x < PoolX; x++)
-	{
-		for (int y = 0; y < PoolY; y++)
+		for (int x = 0; x < PoolX; x++)
 		{
-			if (Sources[x][y])
+			for (int y = 0; y < PoolY; y++)
 			{
-				SourceUpdate(x, y);
-			}
-			else
-			{
-				if (AbsorbantX[x][y])
+				if (Sources[x][y])
 				{
-					AbsorbantUpdateX(x, y);
+					SourceUpdate(x, y);
 				}
-				else if (AbsorbantY[x][y])
+				else
 				{
-					AbsorbantUpdateY(x, y);
+					if (AbsorbantX[x][y])
+					{
+						AbsorbantUpdateX(x, y);
+					}
+					else if (AbsorbantY[x][y])
+					{
+						AbsorbantUpdateY(x, y);
+					}
+					Velocity[x][y] = (1 - VelocityDamping * DeltaTime) * (Displacement[x][y] - LastDisplacement[x][y]);
+					NewDisplacement[x][y] = (1 - DisplacementDamping * DeltaTime) * Displacement[x][y] + Velocity[x][y] + Acceleration[x][y] * DeltaTime * DeltaTime;
 				}
-				Velocity[x][y] = (1 - VelocityDamping * DeltaTime) * (Displacement[x][y] - LastDisplacement[x][y]);
-				NewDisplacement[x][y] = (1 - DisplacementDamping * DeltaTime) * Displacement[x][y] + Velocity[x][y] + Acceleration[x][y] * DeltaTime * DeltaTime;
 			}
 		}
-	}
-	for (int x = 0; x < PoolX; x++)
-	{
-		for (int y = 0; y < PoolY; y++)
+		for (int x = 0; x < PoolX; x++)
 		{
-			if (Sources[x][y] == 0)
+			for (int y = 0; y < PoolY; y++)
 			{
-				LastDisplacement[x][y] = Displacement[x][y];
-				Displacement[x][y] = NewDisplacement[x][y];
-				MaxDisplacement = max(MaxDisplacement, abs(Displacement[x][y]));
+				if (Sources[x][y] == 0)
+				{
+					LastDisplacement[x][y] = Displacement[x][y];
+					Displacement[x][y] = NewDisplacement[x][y];
+					MaxDisplacement = max(MaxDisplacement, abs(Displacement[x][y]));
+				}
 			}
 		}
 	}
@@ -267,7 +303,7 @@ void Pool::VerletUpdate()
 
 void Pool::SourceUpdate(int x, int y)
 {
-	Displacement[x][y] = Sources[x][y] * (sin(0.1 * frames * DeltaTime));
+	Displacement[x][y] = Sources[x][y] * (sin(0.4 * frames * DeltaTime));
 }
 
 void Pool::AbsorbantUpdateX(int x, int y)

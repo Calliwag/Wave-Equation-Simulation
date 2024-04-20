@@ -9,11 +9,11 @@ int main()
     window.SetTargetFPS(60);
 
     Pool pool;
-	pool.PoolX = 100;
-	pool.PoolY = 100;
-	pool.DeltaTime = 0.5;
-	pool.DeltaPos = 7;
-	pool.RenderScale = 1;
+	pool.PoolX = 1000;
+	pool.PoolY = 1000;
+	pool.DeltaTime = 0.25;
+	pool.DeltaPos = 1;
+	pool.RenderScale = 7.0 / 10.0;
 	pool.BoundaryConstant = 1;
 	pool.DisplacementDamping = 0;
 	pool.VelocityDamping = 0;
@@ -62,7 +62,7 @@ int main()
 	{
 		pool.Sources[0][y] = 1;
 	}
-	pool.CourantRect(.4 * pool.PoolX, .6 * pool.PoolX, .4 * pool.PoolY, .6 * pool.PoolY, 0.5);
+	//pool.CourantRect(.4 * pool.PoolX, .6 * pool.PoolX, .4 * pool.PoolY, .6 * pool.PoolY, 0.5);
 	for (int y = 0; y < pool.PoolY; y++)
 	{
 		pool.AbsorbantX[pool.PoolX - 1][y] = 1;
@@ -73,6 +73,32 @@ int main()
 		pool.AbsorbantY[x][pool.PoolY - 1] = 1;
 	}
 
+
+	//Vector2 point = { pool.PoolX / 2,pool.PoolY / 2 };
+	//for (int x = 0; x < pool.PoolX; x++)
+	//{
+	//	for (int y = 0; y < pool.PoolY; y++)
+	//	{
+	//		if (sqrt(pow((x - point.x), 2) + pow((y - point.y), 2)) < 200)
+	//		{
+	//			pool.Courant[x][y] = 0.25;
+	//		}
+	//	}
+	//}
+
+	Vector2 point1 = { 0,pool.PoolY / 2 };
+	Vector2 point2 = { pool.PoolX,pool.PoolY / 2 };
+	for (int x = 0; x < pool.PoolX; x++)
+	{
+		for (int y = 0; y < pool.PoolY; y++)
+		{
+			if (sqrt(pow((x - point1.x), 2) + pow((y - point1.y), 2)) < 707 && sqrt(pow((x - point2.x), 2) + pow((y - point2.y), 2)) < 707)
+			{
+				pool.Courant[x][y] = 0.5;
+			}
+		}
+	}
+
 	//for (int x = 0; x < pool.PoolX; x++)
 	//{
 	//	for (int y = 0; y < pool.PoolY; y++)
@@ -81,32 +107,38 @@ int main()
 	//	}
 	//}
 	
-	pool.CreateCourantColor();
+	pool.CreateCourantColorSimple();
 
-	int LimitFrames = 1;
+	int LimitFrames = 2500;
+
+	SetTextureFilter(pool.CourantTexture, TEXTURE_FILTER_TRILINEAR);
+	SetTextureFilter(pool.PoolTexture.texture, TEXTURE_FILTER_TRILINEAR);
+	SetTextureFilter(pool.FullTexture.texture, TEXTURE_FILTER_TRILINEAR);
 
     while (!window.ShouldClose())
     {
 		pool.VerletUpdate();
 		pool.DrawToTexture();
 		string name = "frame" + to_string(pool.frames) + ".png";
-		//TakeScreenshot(name.c_str()); //Full Screen Captured
 
 		//Full Screen Captured
 		//Image ScreenShot = LoadImageFromTexture(pool.FullTexture.texture);
 		//ImageFlipVertical(&ScreenShot);
 		//ExportImage(ScreenShot, name.c_str());
+		//UnloadImage(ScreenShot);
 
 		//Only Pool Captured
 		//Image ScreenShot = LoadImageFromTexture(pool.PoolTexture.texture);
 		//ImageFlipVertical(&ScreenShot);
 		//ExportImage(ScreenShot , name.c_str());
+		//UnloadImage(ScreenShot);
 
 		if (pool.frames > LimitFrames - 1 && LimitFrames != 0)
 		{
 			UnloadRenderTexture(pool.FullTexture);
 			UnloadRenderTexture(pool.PoolTexture);
 			CloseWindow();
+			break;
 		}
     }
 }
