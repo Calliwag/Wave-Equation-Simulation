@@ -20,31 +20,31 @@ int main()
 	pool.Displacement.resize(pool.PoolX);
 	
 	pool.CreateGrids();
-	//pool.CreatePoolTexture();
 
 	//Centered Sources
-	//pool.Sources[pool.PoolX / 2 - 1][pool.PoolY / 2 - 1] = 1;
-	//pool.Sources[pool.PoolX / 2 - 1][pool.PoolY / 2] = 1;
-	//pool.Sources[pool.PoolX / 2][pool.PoolY / 2 - 1] = 1;
-	//pool.Sources[pool.PoolX / 2][pool.PoolY / 2] = 1;
+	pool.Sources[pool.PoolX / 2 - 1][pool.PoolY / 2 - 1] = 4;
+	pool.Sources[pool.PoolX / 2 - 1][pool.PoolY / 2] = 4;
+	pool.Sources[pool.PoolX / 2][pool.PoolY / 2 - 1] = 4;
+	pool.Sources[pool.PoolX / 2][pool.PoolY / 2] = 4;
 
 	//Double Slit Experiment >100x100
-	for (int y = 0; y < pool.PoolY; y++)
-	{
-		pool.Sources[0][y] = 1;
-	}
-	pool.CourantRect(.25 * pool.PoolX, .25 * pool.PoolX + 1, 0, .4 * pool.PoolY, 0);
-	pool.CourantRect(.25 * pool.PoolX, .25 * pool.PoolX + 1, .45 * pool.PoolY, .55 * pool.PoolY, 0);
-	pool.CourantRect(.25 * pool.PoolX, .25 * pool.PoolX + 1, .6 * pool.PoolY, pool.PoolY, 0);
-	for (int y = 0; y < pool.PoolY; y++)
-	{
-		pool.AbsorbantX[pool.PoolX - 1][y] = 1;
-	}
-	for (int x = .26 * pool.PoolX; x < pool.PoolX; x++)
-	{
-		pool.AbsorbantY[x][0] = 1;
-		pool.AbsorbantY[x][pool.PoolY - 1] = 1;
-	}
+	//float WallLocation = 0.01;
+	//for (int y = 0; y < pool.PoolY; y++)
+	//{
+	//	pool.Sources[0][y] = 2;
+	//}
+	//pool.CourantRect(WallLocation * pool.PoolX, WallLocation * pool.PoolX + 1, 0, .42 * pool.PoolY, 0);
+	//pool.CourantRect(WallLocation * pool.PoolX, WallLocation * pool.PoolX + 1, .47 * pool.PoolY, .53 * pool.PoolY, 0);
+	//pool.CourantRect(WallLocation * pool.PoolX, WallLocation * pool.PoolX + 1, .58 * pool.PoolY, pool.PoolY, 0);
+	//for (int y = 0; y < pool.PoolY; y++)
+	//{
+	//	pool.AbsorbantX[pool.PoolX - 1][y] = 1;
+	//}
+	//for (int x = 0; x < pool.PoolX; x++)
+	//{
+	//	pool.AbsorbantY[x][0] = 1;
+	//	pool.AbsorbantY[x][pool.PoolY - 1] = 1;
+	//}
 
 	//for (int y = 0; y < pool.PoolY; y++)
 	//{
@@ -73,7 +73,11 @@ int main()
 	//	pool.AbsorbantY[x][pool.PoolY - 1] = 1;
 	//}
 
-
+	//Light Through Courant Circle
+	//for (int y = 0; y < pool.PoolY; y++)
+	//{
+	//	pool.Sources[0][y] = 1;
+	//}
 	//Vector2 point = { pool.PoolX / 2,pool.PoolY / 2 };
 	//for (int x = 0; x < pool.PoolX; x++)
 	//{
@@ -81,18 +85,23 @@ int main()
 	//	{
 	//		if (sqrt(pow((x - point.x), 2) + pow((y - point.y), 2)) < 200)
 	//		{
-	//			pool.Courant[x][y] = 0.25;
+	//			pool.Courant[x][y] = 0.5;
 	//		}
 	//	}
 	//}
 
-	//Vector2 point1 = { 0.05 * pool.PoolX,pool.PoolY / 2 };
-	//Vector2 point2 = { 0.8 * pool.PoolX,pool.PoolY / 2 };
+	//Light Through Biconvex Lense
+	//for (int y = 0; y < pool.PoolY; y++)
+	//{
+	//	pool.Sources[0][y] = 1;
+	//}
+	//Vector2 point1 = { 0 * pool.PoolX,pool.PoolY / 2 };
+	//Vector2 point2 = { 1 * pool.PoolX,pool.PoolY / 2 };
 	//for (int x = 0; x < pool.PoolX; x++)
 	//{
 	//	for (int y = 0; y < pool.PoolY; y++)
 	//	{
-	//		if (sqrt(pow((x - point1.x), 2) + pow((y - point1.y), 2)) < 532 && sqrt(pow((x - point2.x), 2) + pow((y - point2.y), 2)) < 750)
+	//		if (sqrt(pow((x - point1.x), 2) + pow((y - point1.y), 2)) < .707 * pool.PoolY && sqrt(pow((x - point2.x), 2) + pow((y - point2.y), 2)) < .707 * pool.PoolY)
 	//		{
 	//			pool.Courant[x][y] = 0.5;
 	//		}

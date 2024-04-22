@@ -22,6 +22,7 @@ public:
 	vector<vector<float>> LastDisplacement = {};
 	vector<vector<float>> Velocity = {};
 	vector<vector<float>> Acceleration = {};
+	vector<vector<float>> AccumulatedEnergy = {};
 	vector<vector<float>> Courant = {};
 	vector<vector<Color>> CourantColor = {};
 	vector<vector<float>> AbsorbantX = {};
@@ -50,6 +51,8 @@ public:
 	Color GetColor(int x, int y);
 
 	Color GetColorEnergy(int x, int y);
+
+	Color GetColorAccumulatedEnergy(int x, int y);
 
 	void EulerUpdate();
 

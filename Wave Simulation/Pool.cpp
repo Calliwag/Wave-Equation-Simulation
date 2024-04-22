@@ -21,6 +21,11 @@ void Pool::CreateGrids()
 	{
 		Acceleration[x].resize(PoolY);
 	}
+	AccumulatedEnergy.resize(PoolX);
+	for (int x = 0; x < PoolX; x++)
+	{
+		AccumulatedEnergy[x].resize(PoolY);
+	}
 	Courant.resize(PoolX);
 	for (int x = 0; x < PoolX; x++)
 	{
@@ -154,7 +159,7 @@ void Pool::DrawToTexture()
 	{
 		for (int y = 0; y < PoolY; y++)
 		{
-			DrawPixel(x, PoolY - y - 1, GetColor(x, y)); //GetColorEnergy
+			DrawPixel(x, PoolY - y - 1, GetColorAccumulatedEnergy(x, y)); //GetColorEnergy
 		}
 	}
 	DrawTexture(CourantTexture, 0, 0, WHITE);
@@ -237,6 +242,20 @@ Color Pool::GetColorEnergy(int x, int y)
 	color.r = 255.0f * min(Energy, 1.0f);
 	color.g = 255.0f * min(Energy, 1.0f);
 	//color.b = 255.0f * min(Energy, 1.0f);
+
+	return color;
+}
+
+Color Pool::GetColorAccumulatedEnergy(int x, int y)
+{
+	Color color;
+	float K = pow((Displacement[x][y] - LastDisplacement[x][y]) / DeltaTime, 2);
+	float P = Courant[x][y] * Courant[x][y] * GetGradientNormedSq(x, y);
+	float Energy = 2.0f * min(20.0f * (K + P), 1.0f);
+	AccumulatedEnergy[x][y] += Energy;
+	color = BLACK;
+	color.r = 255.0f * min(AccumulatedEnergy[x][y] / frames, 1.0f);
+	color.g = 255.0f * min(AccumulatedEnergy[x][y] / frames, 1.0f);
 
 	return color;
 }
