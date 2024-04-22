@@ -154,7 +154,7 @@ void Pool::DrawToTexture()
 	{
 		for (int y = 0; y < PoolY; y++)
 		{
-			DrawPixel(x, PoolY - y - 1, GetColor(x, y));
+			DrawPixel(x, PoolY - y - 1, GetColorEnergy(x, y));
 		}
 	}
 	DrawTexture(CourantTexture, 0, 0, WHITE);
@@ -164,7 +164,7 @@ void Pool::DrawToTexture()
 	DrawTextureEx(PoolTexture.texture, { 0,0 }, 0, DeltaPos * RenderScale, WHITE);
 	DrawRectangleLines(0, 0, PoolX * DeltaPos * RenderScale, PoolY * DeltaPos * RenderScale, WHITE);
 	DrawText(("Frame Time : " + to_string(window.GetFrameTime()) + "s").c_str(), 5, 3, 18, WHITE);
-	DrawGraphY(PoolX / 2, 750, 0, 50);
+	DrawGraphY(PoolX - 10, 750, 0, 50);
 	DrawGraphX(PoolY / 2, 0, 750, 50);
 	EndTextureMode();
 	window.BeginDrawing();
@@ -223,10 +223,21 @@ Color Pool::GetColor(int x, int y)
 		color = YELLOW;
 		cout << frames << ": " << x << " ," << y << ": " << Displacement[x][y] << " ," << Velocity[x][y] << " ," << Acceleration[x][y] << endl;
 	}
-	/*if (Courant[x][y] == 0)
-	{
-		color = WHITE;
-	}*/
+
+	return color;
+}
+
+Color Pool::GetColorEnergy(int x, int y)
+{
+	Color color;
+	float K = pow((Displacement[x][y] - LastDisplacement[x][y]) / DeltaTime, 2);
+	float P = Courant[x][y] * Courant[x][y] * GetGradientNormedSq(x, y);
+	float Energy = 1.0f * min(20.0f * (K + P), 1.0f);
+	color = BLACK;
+	color.r = 255.0f * min(Energy, 1.0f);
+	color.g = 255.0f * min(Energy, 1.0f);
+	//color.b = 255.0f * min(Energy, 1.0f);
+
 	return color;
 }
 
@@ -303,7 +314,7 @@ void Pool::VerletUpdate()
 
 void Pool::SourceUpdate(int x, int y)
 {
-	Displacement[x][y] = Sources[x][y] * (sin(0.4 * frames * DeltaTime));
+	Displacement[x][y] = Sources[x][y] * (sin(0.1 * frames));
 }
 
 void Pool::AbsorbantUpdateX(int x, int y)
@@ -375,6 +386,39 @@ void Pool::AbsorbantUpdateY(int x, int y)
 float Pool::GetAcceleration(int x, int y)
 {
 	return GetSecondDerivative(x, y) * Courant[x][y] * Courant[x][y];
+}
+
+float Pool::GetGradientNormedSq(int x, int y)
+{
+	float DerivativeX = 0;
+	if (x == 0)
+	{
+		DerivativeX = (1.0 / DeltaPos) * (Displacement[x + 1][y] - Displacement[x][y]);
+	}
+	else if (x == PoolX - 1)
+	{
+		DerivativeX = (1.0 / DeltaPos) * (Displacement[x][y] - Displacement[x - 1][y]);
+	}
+	else
+	{
+		DerivativeX = (0.5 / DeltaPos) * (Displacement[x + 1][y] - Displacement[x - 1][y]);
+	}
+
+	float DerivativeY = 0;
+	if (y == 0)
+	{
+		DerivativeY = (1.0 / DeltaPos) * (Displacement[x][y + 1] - Displacement[x][y]);
+	}
+	else if (y == PoolY - 1)
+	{
+		DerivativeY = (1.0 / DeltaPos) * (Displacement[x][y] - Displacement[x][y - 1]);
+	}
+	else
+	{
+		DerivativeY = (0.5 / DeltaPos) * (Displacement[x][y + 1] - Displacement[x][y - 1]);
+	}
+
+	return DerivativeX * DerivativeX + DerivativeY * DerivativeY;
 }
 
 float Pool::GetSecondDerivative(int x, int y)

@@ -49,6 +49,8 @@ public:
 
 	Color GetColor(int x, int y);
 
+	Color GetColorEnergy(int x, int y);
+
 	void EulerUpdate();
 
 	void VerletUpdate();
@@ -60,6 +62,8 @@ public:
 	void AbsorbantUpdateY(int x, int y);
 
 	float GetAcceleration(int x, int y);
+
+	float GetGradientNormedSq(int x, int y);
 
 	float GetSecondDerivative(int x, int y);
 

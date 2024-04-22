@@ -11,7 +11,7 @@ int main()
     Pool pool;
 	pool.PoolX = 1000;
 	pool.PoolY = 1000;
-	pool.DeltaTime = 0.25;
+	pool.DeltaTime = 0.5;
 	pool.DeltaPos = 1;
 	pool.RenderScale = 7.0 / 10.0;
 	pool.BoundaryConstant = 1;
@@ -29,22 +29,22 @@ int main()
 	//pool.Sources[pool.PoolX / 2][pool.PoolY / 2] = 1;
 
 	//Double Slit Experiment >100x100
-	//for (int y = 0; y < pool.PoolY; y++)
-	//{
-	//	pool.Sources[0][y] = 1;
-	//}
-	//pool.CourantRect(.25 * pool.PoolX, .25 * pool.PoolX + 1, 0, .4 * pool.PoolY, 0);
-	//pool.CourantRect(.25 * pool.PoolX, .25 * pool.PoolX + 1, .45 * pool.PoolY, .55 * pool.PoolY, 0);
-	//pool.CourantRect(.25 * pool.PoolX, .25 * pool.PoolX + 1, .6 * pool.PoolY, pool.PoolY, 0);
-	//for (int y = 0; y < pool.PoolY; y++)
-	//{
-	//	pool.AbsorbantX[pool.PoolX - 1][y] = 1;
-	//}
-	//for (int x = .26 * pool.PoolX; x < pool.PoolX; x++)
-	//{
-	//	pool.AbsorbantY[x][0] = 1;
-	//	pool.AbsorbantY[x][pool.PoolY - 1] = 1;
-	//}
+	for (int y = 0; y < pool.PoolY; y++)
+	{
+		pool.Sources[0][y] = 1;
+	}
+	pool.CourantRect(.25 * pool.PoolX, .25 * pool.PoolX + 1, 0, .4 * pool.PoolY, 0);
+	pool.CourantRect(.25 * pool.PoolX, .25 * pool.PoolX + 1, .45 * pool.PoolY, .55 * pool.PoolY, 0);
+	pool.CourantRect(.25 * pool.PoolX, .25 * pool.PoolX + 1, .6 * pool.PoolY, pool.PoolY, 0);
+	for (int y = 0; y < pool.PoolY; y++)
+	{
+		pool.AbsorbantX[pool.PoolX - 1][y] = 1;
+	}
+	for (int x = .26 * pool.PoolX; x < pool.PoolX; x++)
+	{
+		pool.AbsorbantY[x][0] = 1;
+		pool.AbsorbantY[x][pool.PoolY - 1] = 1;
+	}
 
 	//for (int y = 0; y < pool.PoolY; y++)
 	//{
@@ -58,20 +58,20 @@ int main()
 	//}
 
 	//Light Through Square Prism
-	for (int y = 0; y < pool.PoolY; y++)
-	{
-		pool.Sources[0][y] = 1;
-	}
+	//for (int y = 0; y < pool.PoolY; y++)
+	//{
+	//	pool.Sources[0][y] = 1;
+	//}
 	//pool.CourantRect(.4 * pool.PoolX, .6 * pool.PoolX, .4 * pool.PoolY, .6 * pool.PoolY, 0.5);
-	for (int y = 0; y < pool.PoolY; y++)
-	{
-		pool.AbsorbantX[pool.PoolX - 1][y] = 1;
-	}
-	for (int x = 0; x < pool.PoolX; x++)
-	{
-		pool.AbsorbantY[x][0] = 1;
-		pool.AbsorbantY[x][pool.PoolY - 1] = 1;
-	}
+	//for (int y = 0; y < pool.PoolY; y++)
+	//{
+	//	pool.AbsorbantX[pool.PoolX - 1][y] = 1;
+	//}
+	//for (int x = 0; x < pool.PoolX; x++)
+	//{
+	//	pool.AbsorbantY[x][0] = 1;
+	//	pool.AbsorbantY[x][pool.PoolY - 1] = 1;
+	//}
 
 
 	//Vector2 point = { pool.PoolX / 2,pool.PoolY / 2 };
@@ -86,18 +86,18 @@ int main()
 	//	}
 	//}
 
-	Vector2 point1 = { 0,pool.PoolY / 2 };
-	Vector2 point2 = { pool.PoolX,pool.PoolY / 2 };
-	for (int x = 0; x < pool.PoolX; x++)
-	{
-		for (int y = 0; y < pool.PoolY; y++)
-		{
-			if (sqrt(pow((x - point1.x), 2) + pow((y - point1.y), 2)) < 707 && sqrt(pow((x - point2.x), 2) + pow((y - point2.y), 2)) < 707)
-			{
-				pool.Courant[x][y] = 0.5;
-			}
-		}
-	}
+	//Vector2 point1 = { 0.05 * pool.PoolX,pool.PoolY / 2 };
+	//Vector2 point2 = { 0.8 * pool.PoolX,pool.PoolY / 2 };
+	//for (int x = 0; x < pool.PoolX; x++)
+	//{
+	//	for (int y = 0; y < pool.PoolY; y++)
+	//	{
+	//		if (sqrt(pow((x - point1.x), 2) + pow((y - point1.y), 2)) < 532 && sqrt(pow((x - point2.x), 2) + pow((y - point2.y), 2)) < 750)
+	//		{
+	//			pool.Courant[x][y] = 0.5;
+	//		}
+	//	}
+	//}
 
 	//for (int x = 0; x < pool.PoolX; x++)
 	//{
@@ -132,6 +132,8 @@ int main()
 		//ImageFlipVertical(&ScreenShot);
 		//ExportImage(ScreenShot , name.c_str());
 		//UnloadImage(ScreenShot);
+
+		//ffmpeg -framerate 60 -i frame%d.png -vcodec libx264 -crf 18 -pix_fmt yuv420p output.mp4
 
 		if (pool.frames > LimitFrames - 1 && LimitFrames != 0)
 		{
