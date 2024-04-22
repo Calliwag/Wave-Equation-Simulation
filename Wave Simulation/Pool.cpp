@@ -154,7 +154,7 @@ void Pool::DrawToTexture()
 	{
 		for (int y = 0; y < PoolY; y++)
 		{
-			DrawPixel(x, PoolY - y - 1, GetColorEnergy(x, y));
+			DrawPixel(x, PoolY - y - 1, GetColor(x, y)); //GetColorEnergy
 		}
 	}
 	DrawTexture(CourantTexture, 0, 0, WHITE);

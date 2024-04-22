@@ -9,11 +9,11 @@ int main()
     window.SetTargetFPS(60);
 
     Pool pool;
-	pool.PoolX = 1000;
-	pool.PoolY = 1000;
+	pool.PoolX = 700;
+	pool.PoolY = 700;
 	pool.DeltaTime = 0.5;
 	pool.DeltaPos = 1;
-	pool.RenderScale = 7.0 / 10.0;
+	pool.RenderScale = 1;
 	pool.BoundaryConstant = 1;
 	pool.DisplacementDamping = 0;
 	pool.VelocityDamping = 0;
@@ -109,7 +109,7 @@ int main()
 	
 	pool.CreateCourantColorSimple();
 
-	int LimitFrames = 2500;
+	int LimitFrames = 0;
 
 	SetTextureFilter(pool.CourantTexture, TEXTURE_FILTER_TRILINEAR);
 	SetTextureFilter(pool.PoolTexture.texture, TEXTURE_FILTER_TRILINEAR);
